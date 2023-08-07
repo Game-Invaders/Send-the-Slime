@@ -16,40 +16,40 @@ k.loadSprite("background2", "sprites/stringstar fields/background_2.png");
 add([
     sprite('background0'),
     fixed(),
-    scale(4)
+    scale(4.5)
 ]);
 
 add([
     sprite('background0'),
     fixed(),
     pos(1000, 0),
-    scale(4)
+    scale(4.5)
 ]).flipX = true
 
 add([
     sprite('background1'),
     fixed(),
-    scale(4)
+    scale(4.5)
 ]);
 
 add([
     sprite('background1'),
     fixed(),
     pos(1000, 0),
-    scale(4)
+    scale(4.5)
 ]).flipX = true
 
 add([
     sprite('background2'),
     fixed(),
-    scale(4)
+    scale(4.5)
 ]);
 
 add([
     sprite('background2'),
     fixed(),
     pos(1000, 0),
-    scale(4)
+    scale(4.5)
 ]).flipX = true
 
 k.add([
@@ -89,16 +89,5 @@ k.onClick(() => k.addKaboom(k.mousePos()));
 // ])
 
 // c.onClick(() => c.addKaboom(c.mousePos()));
-
-// kaboom();
-
-
-
-
-
-
-
-
-
 
 
