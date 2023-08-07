@@ -1,0 +1,12 @@
+canvas {
+  display: block;
+  margin: 0 auto;
+  margin-top: 10px;
+  background-image: url(../sprites/IMG_4810.png);
+}
+body {
+  background-image: url(../sprites/stringstarfields/example.png);
+  background-size: 100%;
+  background-repeat: no-repeat;
+
+}
