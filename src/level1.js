@@ -1,13 +1,17 @@
-
+const browserWidth = window.innerWidth;
+const browserHeight = window.innerHeight;
 const k = kaboom({
-    width: window.innerWidth,
-    height: window.innerHeight
+  width: browserWidth,
+  height: browserHeight,
 });
 
 k.loadSprite("slime", "sprites/slime/slime-idle-1.png")
 k.loadSprite("background0", "sprites/stringstar fields/background_0.png");
 k.loadSprite("background1", "sprites/stringstar fields/background_1.png");
 k.loadSprite("background2", "sprites/stringstar fields/background_2.png");
+// k.loadSpriteAtlas('sprites/tiles', {
+    
+// })
 
 add([
     sprite('background0'),
@@ -55,35 +59,35 @@ k.add([
 
 k.onClick(() => k.addKaboom(k.mousePos()));
 
-const c = kaboom({
-    width: window.innerWidth,
-    height: window.innerHeight
-});
+// const c = kaboom({
+//     width: window.innerWidth,
+//     height: window.innerHeight
+// });
 
-c.loadSprite("slime", "sprites/slime/slime-idle-1.png")
-c.loadSprite("background0", "sprites/stringstar fields/background_0.png")
-c.loadSprite("background1", "sprites/stringstar fields/background_1.png")
-c.loadSprite("background2", "sprites/stringstar fields/background_2.png")
+// c.loadSprite("slime", "sprites/slime/slime-idle-1.png")
+// c.loadSprite("background0", "sprites/stringstar fields/background_0.png")
+// c.loadSprite("background1", "sprites/stringstar fields/background_1.png")
+// c.loadSprite("background2", "sprites/stringstar fields/background_2.png")
 
-add([
-    sprite('background0'),
-    fixed(),
-    scale(5.5)
-]);
+// add([
+//     sprite('background0'),
+//     fixed(),
+//     scale(5.5)
+// ]);
 
-add([
-    sprite('background0'),
-    fixed(),
-    pos(1000, 0),
-    scale(5.5)
-]).flipX = true
+// add([
+//     sprite('background0'),
+//     fixed(),
+//     pos(1000, 0),
+//     scale(5.5)
+// ]).flipX = true
 
 
-c.add([
-    c.pos(120, 80),
-    c.sprite("slime"),
-])
+// c.add([
+//     c.pos(120, 80),
+//     c.sprite("slime"),
+// ])
 
-c.onClick(() => c.addKaboom(c.mousePos()));
+// c.onClick(() => c.addKaboom(c.mousePos()));
 
-kaboom();
+
