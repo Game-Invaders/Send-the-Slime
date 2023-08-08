@@ -2,7 +2,7 @@ const browserWidth = window.innerWidth;
 const browserHeight = window.innerHeight;
 let k = kaboom({
   width: 630,
-  height: 770,
+  height: browserHeight,
   canvas: document.querySelector("canvas"),
   backgroundAudio: false,
 });
@@ -23,7 +23,7 @@ loadSprite("castleWall", "sprites/stringstarfields/castlebg.png");
 //     anims: {'move-anim': {from: 0, to: 7, loop: true }}
 // });
 
-scene("opening", () => {});
+scene("opening", () => { });
 scene("game", () => {
   loadSpriteAtlas("sprites/tiles/Tileset.png", {
     floor: { x: 15, y: 1, width: 50, height: 75 },
@@ -34,22 +34,27 @@ scene("game", () => {
   });
 
   //! -------------------------------- PLATFORMS ------------------------------- */
-  let platformY = 3;
-  let gameSpeed = 20;
+  let platformY = 620;
+  let gameSpeed = 100;
+  
   function spawnPlatform() {
     let platformX = rand(90, 360);
+    let platformHeight = rand(0.17, 0.25)
     add([
       sprite("platform"),
       fixed(),
       area(),
       pos(platformX, platformY),
-      move(DOWN, gameSpeed),
-      scale(0.24, 0.15),
+      // move(DOWN, gameSpeed),
+      scale(platformHeight, 0.15),
       offscreen({ destroy: true }),
     ]);
+    platformY -= 100
   }
-
-  loop(6, () => {
+  // for (let i = 1; i < 8; i++) {
+  //   spawnPlatform()
+  // }
+  loop(0.3, () => {
     spawnPlatform();
   });
 
@@ -90,13 +95,14 @@ scene("game", () => {
       "0000000000000000000000000",
       "0000000000000000000000000",
       "0000000000000000000000000",
+      "0000000000000000000000000",
     ],
     {
       tileWidth: 25,
       tileHeight: 25,
       tiles: {
         0: () => [sprite("floor"), area(), fixed(), body({ isStatic: true })],
-        1: () => [sprite("back")],
+        // 1: () => [sprite("back")],
         2: () => [sprite("wallL"), area(), fixed(), body({ isStatic: true })],
         3: () => [sprite("wallC"), area(), fixed(), body({ isStatic: true })],
         4: () => [sprite("wallR"), area(), fixed(), body({ isStatic: true })],
@@ -110,47 +116,123 @@ scene("game", () => {
   //! -------------------------------- CHARACTER ------------------------------- */
   const player = add([
     sprite("slime"),
-    pos(265, 662),
+    pos(265, 680),
     scale(2.5),
     area(),
     body(),
   ]);
   player.flipX = true;
 
+  // player.onUpdate(() => {
+  //   campPos(player.pos.x, 0)
+  // })
+
   //! -------------------------------- CONTROLS -------------------------------- */
+  let wallTouch = 0;
+  let traveled = 150;
+  // if (!player.isGrounded()) traveled = 0
+
   onKeyPress("space", () => {
     setGravity(500);
-    // if (player.grounded()) {
-    player.jump(300);
-    // }
+    if (player.isGrounded() && traveled >= 0) {
+        player.jump(300 + Number(traveled));
+        traveled = 0
+    } 
   });
+
+  onKeyPress("up", () => {
+    setGravity(500);
+    if (player.isGrounded() && traveled >= 0) {
+        player.jump(300 + Number(traveled));
+        traveled = 0
+    }
+  });
+
   onKeyDown("left", () => {
+    // loop(1, () => {
+    //   if (player.isGrounded()) { 
+    //     traveled++
+    //   } 
+    //   if (traveled > 5) traveled = 5
+    // })
     player.move(-200, 0);
     player.flipX = false;
   });
+
   onKeyDown("right", () => {
+    // loop(1, () => {
+    //   if (player.isGrounded()) { 
+    //     traveled++
+    //   } 
+    //   if (traveled > 5) traveled = 5
+    // })
     player.move(200, 0);
     player.flipX = true;
   });
-  onCollide("slime", "platform", (obj) => {
-    obj.body = { isStatic: true };
+
+  // player.onCollideEnd("platform", (player) => {
+  //   player.body({ isStatic: true });
+
+  // });
+
+  player.onCollide("wallL", () => {
+    traveled = 0
   });
-  onCollide("slime", "wallL", () => {
-    onKeyPress("space", () => {
-      player.jump(400);
-      player.flipX = false;
-    });
-  });
-  onCollide("slime", "wallR", () => {
-    onKeyPress("space", () => {
-      player.jump(400);
-      player.flipX = true;
-    });
-  });
+
+  player.onCollide("wallR", () => {
+    traveled = 0
+  })
+
+  player.onCollide('floor', () => {
+    traveled = 0
+  })
 
   // onClick(() => k.addKaboom(k.mousePos()));
 });
 
-scene("gameover", () => {});
+//! -------------------------------- START SCREEN -------------------------------- */
+
+// scene("start", () => {
+//     loadFont()
+//     // const bgImage = await loadSprite('background_0', 'sprites/stringstarfields/background_0.png); 
+
+//     add([
+//         rect(width(), height()), 
+//         bgImage,
+//         pos(width() / 2, height() / 2),
+//         anchor("center"),
+//     ]);
+
+//     const startGame = add([
+//         text("Start", {
+//           transform: (idx, ch) => ({
+//             background: rgb(255, 255, 255),
+//           }),
+//         }),
+//         pos(width() / 2, height() / 1.5),
+//         scale(0.75, 0.75),
+//         anchor("center"),
+//         area(),
+//       ]);
+
+//     const titleText = add([
+//         text("Send the Slime", {
+//           transform: (idx, ch) => ({
+//             color: rgb(255, 255, 255),
+//             pos: vec2(0, wave(-4, 4, time() * 4 + idx * 0.5)),
+//             scale: wave(1, 1.2, time() * 3 + idx),
+//             angle: wave(-24, 9, time() * 3 + idx),
+//           }),
+//         }),
+//         pos(width()/2,startGame.pos.y/2),
+//         scale(1.5),
+//         anchor("center"),
+//         area(),
+//       ]);
+// });
+
+// go("start");
+//! -------------------------------- GAMEOVER SCREEN -------------------------------- */
+scene("gameover", () => { });
 
 go("game");
