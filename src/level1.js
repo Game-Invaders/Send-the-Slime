@@ -78,6 +78,9 @@ add([
     anchor("center"),
     area(),
   ]);
+  onClick(() => {
+    go('instructions')
+  });
 
   const titleText = add([
     text("Send the Slime", {
@@ -95,6 +98,59 @@ add([
   onKeyPress("space", () => {
     go("game");
   });
+});
+
+scene('instructions', () => {
+  add([
+    sprite('background-0'),
+    fixed(), 
+    scale(5),
+])
+
+  add([
+    sprite('background-0'),
+    fixed(),
+    pos(1000, 0),
+    scale(5),
+]).flipX = true
+
+add([
+  sprite('background-1'),
+  fixed(),
+  scale(4.35)
+])
+
+add([
+  sprite('background-1'),
+  fixed(),
+  pos(1000, 0),
+  scale(4.35),
+]).flipX = true
+
+add([
+  sprite('background-2'),
+  fixed(),
+  scale(4.35)
+])
+
+add([
+  sprite('background-2'),
+  fixed(),
+  pos(1000, 0),
+  scale(4.35),
+]).flipX = true
+
+  const controls = add([
+    text('This is how to play!', {
+      font: "custom-font",
+      size: 40,
+    }),
+    pos(width() / 2, height() / 2),
+    scale(1),
+    anchor('center'),
+    area(),
+  ])
+
 });
 
 //! --------------------------------- TILESET -------------------------------- */
