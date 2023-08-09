@@ -23,16 +23,62 @@ loadSprite("castleWall", "sprites/stringstarfields/castlebg.png");
 //     anims: {'move-anim': {from: 0, to: 7, loop: true }}
 // });
 
-scene("opening", () => { });
-scene("game", () => {
-  loadSpriteAtlas("sprites/tiles/Tileset.png", {
-    floor: { x: 15, y: 1, width: 50, height: 75 },
-    back: { x: 65, y: 35, width: 50, height: 75 },
+//! -------------------------------- START SCREEN -------------------------------- */
+scene("start", () => {
+      // loadFont();
+      const bgColor = color(78,138,198);
+  
+      add([
+          rect(width(), height()), 
+          bgColor,
+          pos(width() / 2, height() / 2),
+          anchor("center"),
+      ]);
+  
+      const startGame = add([
+          text("Press Space to Start", {
+            transform: (idx, ch) => ({
+              color: color(78,138,198),
+              // pos: vec2(0, wave(-4, 4, time() * 4 + idx * 0.5)),
+              // scale: wave(1, 1.2, time() * 3 + idx),
+              // angle: wave(-24, 9, time() * 3 + idx),
+            }),
+          }),
+          pos(width() / 2, height() / 1.5),
+          scale(0.75, 0.75),
+          anchor("center"),
+          area(),
+        ]);
+      
+      const titleText = add([
+          text("Send the Slime", {
+            transform: (idx, ch) => ({
+              color: color(78,138,198),
+              pos: vec2(0, shake(-4, 4, time() * 4 + idx * 0.5)),
+              scale: wave(1, 1.2, time() * 3 + idx),
+              angle: wave(-24, 9, time() * 3 + idx),
+            }),
+          }),
+          pos(width()/2,startGame.pos.y/2),
+          scale(1.5),
+          anchor("center"),
+          area(),
+        ])
+        onKeyPress("space", () => {
+        go("game");   
+      });
+    });
+    
+    // scene("opening", () => { });
+    scene("game", () => {
+      loadSpriteAtlas("sprites/tiles/Tileset.png", {
+        floor: { x: 15, y: 1, width: 50, height: 75 },
+        back: { x: 65, y: 35, width: 50, height: 75 },
     wallL: { x: 0, y: 25, width: 25, height: 75 },
     wallC: { x: 55, y: 25, width: 25, height: 75 },
     wallR: { x: 99, y: 25, width: 35, height: 75 },
   });
-
+  
   //! -------------------------------- PLATFORMS ------------------------------- */
   let platformY = 620;
   let gameSpeed = 100;
@@ -52,15 +98,15 @@ scene("game", () => {
     platformY -= 100
   }
   // for (let i = 1; i < 8; i++) {
-  //   spawnPlatform()
-  // }
-  loop(0.3, () => {
-    spawnPlatform();
-  });
-
-  //! ----------------------------------- MAP ---------------------------------- */
-  add([sprite("castleWall"), fixed(), pos(1.7, 0), scale(1, 1.35)]);
-
+    //   spawnPlatform()
+    // }
+    loop(0.3, () => {
+      spawnPlatform();
+    });
+    
+    //! ----------------------------------- MAP ---------------------------------- */
+    add([sprite("castleWall"), fixed(), pos(1.7, 0), scale(1, 1.35)]);
+    
   const map = addLevel(
     [
       "24                     24",
@@ -108,69 +154,69 @@ scene("game", () => {
         4: () => [sprite("wallR"), area(), fixed(), body({ isStatic: true })],
       },
     }
-  );
+    );
+    
+    // const platGap = 100;
+    // const offset = rand(-50, 50)
+    
+    //! -------------------------------- CHARACTER ------------------------------- */
+    const player = add([
+      sprite("slime"),
+      pos(265, 680),
+      scale(2.5),
+      area(),
+      body(),
+    ]);
+    player.flipX = true;
 
-  // const platGap = 100;
-  // const offset = rand(-50, 50)
-
-  //! -------------------------------- CHARACTER ------------------------------- */
-  const player = add([
-    sprite("slime"),
-    pos(265, 680),
-    scale(2.5),
-    area(),
-    body(),
-  ]);
-  player.flipX = true;
-
-  // player.onUpdate(() => {
-  //   campPos(player.pos.x, 0)
-  // })
-
-  //! -------------------------------- CONTROLS -------------------------------- */
-  let wallTouch = 0;
-  let traveled = 150;
-  // if (!player.isGrounded()) traveled = 0
-
-  onKeyPress("space", () => {
-    setGravity(500);
+    // player.onUpdate(() => {
+      //   campPos(player.pos.x, 0)
+      // })
+      
+      //! -------------------------------- CONTROLS -------------------------------- */
+      let wallTouch = 0;
+      let traveled = 150;
+      // if (!player.isGrounded()) traveled = 0
+      
+      onKeyPress("space", () => {
+        setGravity(500);
     if (player.isGrounded() && traveled >= 0) {
-        player.jump(300 + Number(traveled));
+      player.jump(300 + Number(traveled));
         traveled = 0
     } 
   });
-
+  
   onKeyPress("up", () => {
     setGravity(500);
     if (player.isGrounded() && traveled >= 0) {
-        player.jump(300 + Number(traveled));
-        traveled = 0
+      player.jump(300 + Number(traveled));
+      traveled = 0
     }
   });
-
+  
   onKeyDown("left", () => {
     // loop(1, () => {
-    //   if (player.isGrounded()) { 
-    //     traveled++
-    //   } 
-    //   if (traveled > 5) traveled = 5
-    // })
-    player.move(-200, 0);
-    player.flipX = false;
-  });
-
-  onKeyDown("right", () => {
-    // loop(1, () => {
-    //   if (player.isGrounded()) { 
-    //     traveled++
-    //   } 
-    //   if (traveled > 5) traveled = 5
-    // })
-    player.move(200, 0);
-    player.flipX = true;
-  });
-
-  // player.onCollideEnd("platform", (player) => {
+      //   if (player.isGrounded()) { 
+        //     traveled++
+        //   } 
+        //   if (traveled > 5) traveled = 5
+        // })
+        player.move(-200, 0);
+        player.flipX = false;
+      });
+      
+      onKeyDown("right", () => {
+        // loop(1, () => {
+          //   if (player.isGrounded()) { 
+            //     traveled++
+            //   } 
+            //   if (traveled > 5) traveled = 5
+            // })
+            player.move(200, 0);
+            player.flipX = true;
+          });
+          
+          // player.onCollideEnd("platform", (player) => {
   //   player.body({ isStatic: true });
 
   // });
@@ -178,61 +224,21 @@ scene("game", () => {
   player.onCollide("wallL", () => {
     traveled = 0
   });
-
+  
   player.onCollide("wallR", () => {
     traveled = 0
   })
-
+  
   player.onCollide('floor', () => {
     traveled = 0
   })
-
+  
   // onClick(() => k.addKaboom(k.mousePos()));
 });
 
-//! -------------------------------- START SCREEN -------------------------------- */
 
-// scene("start", () => {
-//     loadFont()
-//     // const bgImage = await loadSprite('background_0', 'sprites/stringstarfields/background_0.png); 
-
-//     add([
-//         rect(width(), height()), 
-//         bgImage,
-//         pos(width() / 2, height() / 2),
-//         anchor("center"),
-//     ]);
-
-//     const startGame = add([
-//         text("Start", {
-//           transform: (idx, ch) => ({
-//             background: rgb(255, 255, 255),
-//           }),
-//         }),
-//         pos(width() / 2, height() / 1.5),
-//         scale(0.75, 0.75),
-//         anchor("center"),
-//         area(),
-//       ]);
-
-//     const titleText = add([
-//         text("Send the Slime", {
-//           transform: (idx, ch) => ({
-//             color: rgb(255, 255, 255),
-//             pos: vec2(0, wave(-4, 4, time() * 4 + idx * 0.5)),
-//             scale: wave(1, 1.2, time() * 3 + idx),
-//             angle: wave(-24, 9, time() * 3 + idx),
-//           }),
-//         }),
-//         pos(width()/2,startGame.pos.y/2),
-//         scale(1.5),
-//         anchor("center"),
-//         area(),
-//       ]);
-// });
-
-// go("start");
-//! -------------------------------- GAMEOVER SCREEN -------------------------------- */
+ //! -------------------------------- GAMEOVER SCREEN -------------------------------- */
 scene("gameover", () => { });
-
+      
 go("game");
+go('start');
