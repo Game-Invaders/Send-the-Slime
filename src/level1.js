@@ -200,7 +200,7 @@ scene("game", () => {
   let score = 0;
   let targetScore = randi(20, 60);
   loadSprite("platform", "sprites/tiles/platform.png");
-  loadSprite("slime", "sprites/slime/slime-idle-1.png");
+  loadSprite("slime", "sprites/Slime/slime-idle-1.png");
   loadSpriteAtlas("sprites/tiles/Tileset.png", {
     floor: { x: 15, y: 1, width: 50, height: 75 },
     back: { x: 65, y: 35, width: 50, height: 75 },
