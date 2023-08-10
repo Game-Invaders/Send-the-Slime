@@ -1,30 +1,23 @@
 const browserWidth = window.innerWidth;
 const browserHeight = window.innerHeight;
 kaboom({
-  width: browserWidth / 2.264,
+  width: 630,
   height: browserHeight,
   canvas: document.querySelector("canvas"),
   backgroundAudio: false,
 });
-let score = 0;
+
 //! --------------------------------- SPRITES -------------------------------- */
-
-loadFont("custom-font", "fonts/Extrude-90aK.ttf");
-loadFont("custom-font2", "fonts/Exwayer-X3eqa.ttf");
-loadFont("custom-font3", "fonts/LcdPhone-wgZ2.ttf");
-loadSprite("slime", "sprites/slime/slime-idle-1.png");
-
 
 loadSprite("castleWall", "sprites/stringstarfields/castlebg.png");
 loadSprite("background-0", "sprites/stringstarfields/background_0.png");
 loadSprite("background-1", "sprites/stringstarfields/background_1.png");
 loadSprite("background-2", "sprites/stringstarfields/background_2.png");
+loadSprite("floorBase", "sprites/stringstarfields/floorTile.png");
+loadFont("custom-font", "fonts/Extrude-90aK.ttf");
+loadFont("custom-font2", "fonts/Exwayer-X3eqa.ttf");
+loadFont("custom-font3", "fonts/LcdPhone-wgZ2.ttf");
 
-// add([sprite("background-0"), fixed(), scale(5)]);
-
-// add([sprite("background-0"), fixed(), pos(1000, 0), scale(5)]).flipX = true;
-
-// add([sprite("background-1"), fixed(), scale(4.35)]);
 // //! -------------------------------- START SCREEN -------------------------------- */
 scene("start", () => {
   loadFont("custom-font", "fonts/Extrude-90aK.ttf");
@@ -203,11 +196,11 @@ scene("instructions", () => {
 //! --------------------------------- TILESET -------------------------------- */
 scene("game", () => {
   setGravity(500);
-  score = 0;
-  let targetScore = randi(60, 2000) *1
-
   add([sprite("castleWall"), fixed(), pos(1.7, 0), scale(1, 1.35)]);
-
+  let score = 0;
+  let targetScore = randi(20, 60);
+  loadSprite("platform", "sprites/tiles/platform.png");
+  loadSprite("slime", "sprites/slime/slime-idle-1.png");
   loadSpriteAtlas("sprites/tiles/Tileset.png", {
     floor: { x: 15, y: 1, width: 50, height: 75 },
     back: { x: 65, y: 35, width: 50, height: 75 },
@@ -216,39 +209,134 @@ scene("game", () => {
     wallR: { x: 99, y: 25, width: 35, height: 75 },
   });
 
-  //! -------------------------------- PLATFORMS ------------------------------- */
-  loadSprite("platform", "sprites/tiles/platform.png");
+  //! -------------------------------- CHARACTER ------------------------------- */
 
-  let highestPlatformY = height();
-  let platformY = height() - 150;
+  const player = add([
+    sprite("slime"),
+    pos(265, 690),
+    scale(2.5),
+    area(),
+    body(),
+    fixed(),
+    "player",
+  ]);
+  player.flipX = true;
+
+  //! -------------------------------- PLATFORMS ------------------------------- */
+  let platformY = player.pos.y;
   let gameSpeed = 100;
-  let platform;
+  let platQuant = 200;
+  let platId = 0;
 
   function spawnPlatform() {
     let platformX = rand(90, 360);
     let platformHeight = rand(0.17, 0.25);
-    platform = add([
+    platId++;
+    add([
       sprite("platform"),
       area(),
-      // fixed(),
       pos(platformX, platformY),
       scale(platformHeight, 0.15),
+      offscreen({ destroy: true }),
       { passed: false },
       { scored: false },
+      { id: platId },
       "platform",
     ]);
     platformY -= 100;
-    if (platform.pos.y < highestPlatformY) {
-      highestPlatformY = platform.pos.y;
-    }
   }
   for (let i = 1; i < 200; i++) {
     spawnPlatform();
   }
+  onUpdate("platform", (platform) => {
+    if (platform.pos.y >= player.pos.y) {
+      platform.passed = true;
+      if (platform.scored === false) {
+        platform.scored = true;
+        score += 10;
+        destroy(scoreText);
+        scoreText = add([
+          text(`score: ${score}`, {
+            font: "custom-font3",
+            size: 30,
+          }),
+          pos(125, height() - 53),
+          scale(0.75, 0.75),
+          anchor("center"),
+          area(),
+          fixed(),
+          color("#f57878"),
+        ]);
+      }
+    }
+
+    let newPosX = platform.pos.x;
+    let newPosY = platform.pos.y;
+    let newPlatformHeight = platform.scale.x;
+    if (platform.passed === true) {
+      wait(0.25, () => {
+        if (platform.pos.y >= player.pos.y) {
+          destroy(platform);
+          add([
+            sprite("platform"),
+            fixed(),
+            area(),
+            body({ isStatic: true }),
+            pos(newPosX, newPosY),
+            scale(newPlatformHeight, 0.15),
+            offscreen({ destroy: true }),
+            { passed: true },
+            { scored: true },
+            "newPlatform",
+          ]);
+        }
+      });
+    }
+  });
+  onUpdate("platform", (platform) => {
+    if (platform.pos.y >= player.pos.y) {
+      platform.passed = true;
+      if (platform.scored === false) {
+        platform.scored = true;
+        score += 10;
+        destroy(scoreText);
+        scoreText = add([
+          text(`score: ${score}`, {
+            font: "custom-font3",
+            size: 30,
+          }),
+          pos(125, height() - 53),
+          scale(0.75, 0.75),
+          anchor("center"),
+          area(),
+          fixed(),
+          color("#f57878"),
+        ]);
+      }
+    }
+  });
+
+  onUpdate("newPlatform", (platform) => {
+    newPosX = platform.pos.x;
+    newPosY = platform.pos.y;
+    newPlatformHeight = platform.scale.x;
+    if (platform.passed === true && platform.pos.y < player.pos.y) {
+      destroy(platform);
+      add([
+        sprite("platform"),
+        fixed(),
+        area(),
+        pos(newPosX, newPosY),
+        scale(newPlatformHeight, 0.15),
+        offscreen({ destroy: true }),
+        { passed: false },
+        { scored: true },
+        "platform",
+      ]);
+    }
+  });
 
   //! ----------------------------------- MAP ---------------------------------- */
-  // add([sprite("castleWall"), fixed(), pos(1.7, 0), scale(1, 1.35)]);
-
   const map = addLevel(
     [
       "24                     24",
@@ -280,16 +368,26 @@ scene("game", () => {
       "24                     24",
       "24                     24",
       "24                     24",
-      "0000000000000000000000000",
-      "0000000000000000000000000",
-      "0000000000000000000000000",
-      "0000000000000000000000000",
+      "24                     24",
+      "24                     24",
+      "24                     24",
+      "2400000000000000000000024",
+      "2400000000000000000000024",
+      "2400000000000000000000024",
+      "2400000000000000000000024",
+      "2400000000000000000000024",
     ],
     {
       tileWidth: 25,
       tileHeight: 25,
       tiles: {
-        0: () => [sprite("floor"), area(), fixed(), body({ isStatic: true })],
+        0: () => [
+          sprite("floor"),
+          area(),
+          fixed(),
+          body({ isStatic: true }),
+          offscreen({ destroy: true }),
+        ],
         // 1: () => [sprite("back")],
         2: () => [sprite("wallL"), area(), fixed(), body({ isStatic: true })],
         3: () => [sprite("wallC"), area(), fixed(), body({ isStatic: true })],
@@ -297,54 +395,35 @@ scene("game", () => {
       },
     }
   );
+
   let targetScoreText = add([
     text("Target: " + targetScore, {
       font: "custom-font3",
       size: 28,
     }),
-    pos(125, 670),
-    scale(0.72, 0.72),
+    pos(125, height() - 33),
+    scale(0.65, 0.65),
     anchor("center"),
     area(),
     fixed(),
     color("#f57878"),
-  ]);  
+  ]);
   let scoreText = add([
     text("score: " + score, {
       font: "custom-font3",
       size: 28,
     }),
-    pos(125, 710),
+    pos(125, height() - 53),
     scale(0.75, 0.75),
     anchor("center"),
     area(),
     fixed(),
     color("#f57878"),
   ]);
-  // const platGap = 100;
-  // const offset = rand(-50, 50)
 
-  //! -------------------------------- CHARACTER ------------------------------- */
-
-  const player = add([
-    sprite("slime"),
-    pos(width() / 2 - 10, 680),
-    scale(2.5),
-    area(),
-    body(),
-    fixed(),
-    "player",
-  ]);
-  player.flipX = true;
-
-  //! -------------------------------- CONTROLS -------------------------------- */
-  let wallTouch = 0;
-  let momentum = 150;
-  let jumpForce = 350;
-
+  //! ---------------------------------- SCORE --------------------------------- */
   onUpdate("platform", (platform) => {
-    debug.log("slime position: " + player.pos);
-    if (platform.passed === false && platform.pos.y >= player.pos.y) {
+    if (platform.pos.y >= player.pos.y) {
       platform.passed = true;
       if (platform.scored === false) {
         platform.scored = true;
@@ -355,7 +434,7 @@ scene("game", () => {
             font: "custom-font3",
             size: 30,
           }),
-          pos(125, 710),
+          pos(125, height() - 53),
           scale(0.75, 0.75),
           anchor("center"),
           area(),
@@ -364,56 +443,11 @@ scene("game", () => {
         ]);
       }
     }
-
-    if (platform.passed === true) {
-      let newPosX = platform.pos.x;
-      let newPosY = platform.pos.y;
-      let newPlatformHeight = platform.scale.x;
-      wait(0.25, () => {
-            if (platform.pos.y >= player.pos.y) {
-              destroy(platform);
-              add([
-               sprite("platform"),
-              area(),
-              body({ isStatic: true }),
-              pos(newPosX, newPosY),
-              scale(newPlatformHeight, 0.15),
-              // fixed(),
-              { passed: true },
-              { scored: true },
-              "newPlatform",
-              ]);
-            }
-      });
-    }
-
-    if (score >= targetScore /*|| player.pos.y > height()*/) {
-      go("game over", score);
-    }
-
-    if (platform.pos.y > player.pos.y + height() / 2) {
-      destroy(platform);
-      spawnPlatform();
-    }
   });
 
-  onUpdate("newPlatform", (platform) => {
-    newPosX = platform.pos.x;
-    newPosY = platform.pos.y;
-    newPlatformHeight = platform.scale.x;
-    if (platform.passed === true && platform.pos.y < player.pos.y) {
-      destroy(platform);
-      let platform = add([
-        sprite("platform"),
-        area(),
-        pos(newPosX, newPosY),
-        scale(newPlatformHeight, 0.15),
-        { passed: false },
-        { scored: true },
-        "platform",
-      ]);
-    }
-  });
+  //! -------------------------------- CONTROLS -------------------------------- */
+  let momentum = 0;
+  let jumpForce = 350;
 
   onKeyPress("space", () => {
     if (player.isGrounded()) wallTouch = 0;
@@ -423,13 +457,13 @@ scene("game", () => {
       player.jump(jumpForce + Number(momentum) * 25);
       momentum = 0;
     }
+    momentum = 0;
   });
   onKeyRelease("space", () => {
     momentum = 0;
   });
 
   onKeyPress("up", () => {
-    if (player.isGrounded()) wallTouch = 0;
     setGravity(500);
     if (momentum > 5) momentum = 5;
     if (player.isGrounded()) {
@@ -443,11 +477,13 @@ scene("game", () => {
   });
 
   onKeyDown("left", () => {
-    if (player.isGrounded()) {
-      wait(0.5, () => {
-        momentum += 0.4;
-      });
-    }
+    loop(0.5, () => {
+      if (player.isGrounded()) {
+        wait(1, () => {
+          momentum += 0.4;
+        });
+      }
+    });
     player.move(-200, 0);
     player.flipX = false;
   });
@@ -456,61 +492,24 @@ scene("game", () => {
   });
 
   onKeyDown("right", () => {
-    if (player.isGrounded()) {
-      wait(0.5, () => {
-        momentum += 0.4;
-      });
-    }
+    loop(0.5, () => {
+      if (player.isGrounded()) {
+        wait(1, () => {
+          momentum += 0.4;
+        });
+      }
+    });
     player.move(200, 0);
     player.flipX = true;
   });
   onKeyRelease("right", () => {
     momentum = 0;
   });
-
-  player.onCollide("wallL", "wallR", () => {
-    momentum = 0;
-    if (wallTouch === 0) doubleJump(1);
-    wallTouch++;
-  });
-
-  player.onCollide("floor", () => {
-    wallTouch = 0;
-  });
-
-  let camY = height() - 300;
-  // onUpdate("player", (player) => {
-  // //   if(player.pos.y <= height()/2) {
-  // //     camPos(width() / 2, player.pos.y);
-  // //   }
-
-  //   if (score >= 40 ) {
-  //     go("game over", score);
-  //   }
-  // });
-
-  // onUpdate("player", (player) => {
-  //   camPos(getPlayer.pos)
-  // if (getPlayer.pos.y > 700) {
-  // go('game over')
-  // }
-  let oldPlayerY = player.pos.y;
-  onUpdate("player", (player) => {
-    camPos(width() / 2, camY);
-    if(player.pos.y > oldPlayerY) {
-      camY -= 10;
+  onUpdate(() => {
+    if (score >= targetScore) {
+      go("game over", score);
     }
-    
   });
-
-  // camScale(1);
-  // })
-  // onUpdate(()=> {
-  //   camPos(width()/2, camY);
-  //   loop(2,() => {
-  //     camY++;
-  //   })
-  // })
 });
 
 //! -------------------------------- GAMEOVER SCREEN -------------------------------- */
@@ -601,6 +600,7 @@ scene("game over", (score) => {
 
 //! -------------------------------- INVOKATION -------------------------------- */
 
-// go("game over");
+go("game over");
 go("game");
-// go('start')
+go("start");
+// destroy('floor')
