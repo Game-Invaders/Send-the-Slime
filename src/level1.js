@@ -221,12 +221,12 @@ scene("game", () => {
     add([
       sprite("platform"),
       area(),
-      // body({ isStatic: true }),
       fixed(),
       pos(platformX, platformY),
       scale(platformHeight, 0.15),
       offscreen({ destroy: true }),
       { passed: false },
+      { scored: false},
       "platform",
     ]);
     platformY -= 100;
@@ -316,9 +316,7 @@ scene("game", () => {
   ]);
   player.flipX = true;
 
-  // player.onUpdate(() => {
-  //   campPos(player.pos.x, 0)
-  // })
+  
 
   //! -------------------------------- CONTROLS -------------------------------- */
   let wallTouch = 0;
@@ -328,21 +326,25 @@ scene("game", () => {
   // if (!player.isGrounded()) traveled = 0
 
   onUpdate("platform", (platform) => {
-    if (platform.passed === false && platform.pos.y >= player.pos.y) {
+    if (platform.passed === false && platform.pos.y >= player.pos.y /*&& platform.scored === false*/) {
       platform.passed = true;
-      score += 10;
-      destroy(scoreText);
-      scoreText = add([
-        text(`score: ${score}`, {
-          font: "custom-font3",
-          size: 30,
-        }),
-        pos(125, 710),
-        scale(0.75, 0.75),
-        anchor("center"),
-        area(),
-        color("#f57878"),
-      ]);
+      if(platform.scored === false) {
+        platform.scored = true;
+        score += 10;
+        destroy(scoreText);
+        scoreText = add([
+          text(`score: ${score}`, {
+            font: "custom-font3",
+            size: 30,
+          }),
+          pos(125, 710),
+          scale(0.75, 0.75),
+          anchor("center"),
+          area(),
+          color("#f57878"),
+        ]);
+      }
+      
     }
 
     let newPosX = platform.pos.x;
@@ -362,6 +364,7 @@ scene("game", () => {
             scale(newPlatformHeight, 0.15),
             offscreen({ destroy: true }),
             { passed: true },
+            { scored: true },
             "newPlatform",
           ]);
         }
@@ -384,6 +387,7 @@ scene("game", () => {
         scale(newPlatformHeight, 0.15),
         offscreen({ destroy: true }),
         { passed: false },
+        { scored: true },
         "platform",
       ]);
     }
@@ -418,7 +422,7 @@ scene("game", () => {
       momentum = 0;
     }
   });
-  // onKeyRelease("space", () => {momentum = 0})
+  onKeyRelease("space", () => {momentum = 0})
 
   onKeyPress("up", () => {
     if (player.isGrounded()) wallTouch = 0;
@@ -430,7 +434,7 @@ scene("game", () => {
     }
     momentum = 0;
   });
-  // onKeyRelease("up", () => {momentum = 0})
+  onKeyRelease("up", () => {momentum = 0})
 
   onKeyDown("left", () => {
     if (player.isGrounded()) {
@@ -467,104 +471,118 @@ scene("game", () => {
   player.onCollide("floor", () => {
     wallTouch = 0;
   });
+
+  // onUpdate("player", (player) => {
+  //   if(player.pos.y <= height()/2) {
+  //     camPos(width() / 2, player.pos.y);
+  //   }
+    
+  //   // if (score >= 40 && player.onFall()) {
+  //   //   // go("game over");
+  //   // }
+  // });
+  // onUpdate(()=> {
+  //   camPos(width()/2, player.pos.y);
+  // })
+  
 });
 
 //! -------------------------------- GAMEOVER SCREEN -------------------------------- */
-// scene("game over", () => {
-//   loadFont("custom-font", "fonts/Extrude-90aK.ttf");
+scene("game over", () => {
+  loadFont("custom-font", "fonts/Extrude-90aK.ttf");
 
-//   add([
-//     sprite('background-0'),
-//     fixed(),
-//     scale(5),
-// ])
+  add([
+    sprite('background-0'),
+    fixed(),
+    scale(5),
+])
 
-// add([
-//     sprite('background-0'),
-//     fixed(),
-//     pos(1000, 0),
-//     scale(5),
-// ]).flipX = true
+add([
+    sprite('background-0'),
+    fixed(),
+    pos(1000, 0),
+    scale(5),
+]).flipX = true
 
-// add([
-//   sprite('background-1'),
-//   fixed(),
-//   scale(4.35)
-// ])
+add([
+  sprite('background-1'),
+  fixed(),
+  scale(4.35)
+])
 
-// add([
-//   sprite('background-1'),
-//   fixed(),
-//   pos(1000, 0),
-//   scale(4.35),
-// ]).flipX = true
+add([
+  sprite('background-1'),
+  fixed(),
+  pos(1000, 0),
+  scale(4.35),
+]).flipX = true
 
-// add([
-//   sprite('background-2'),
-//   fixed(),
-//   scale(4.35)
-// ])
+add([
+  sprite('background-2'),
+  fixed(),
+  scale(4.35)
+])
 
-// add([
-//   sprite('background-2'),
-//   fixed(),
-//   pos(1000, 0),
-//   scale(4.35),
-// ]).flipX = true
+add([
+  sprite('background-2'),
+  fixed(),
+  pos(1000, 0),
+  scale(4.35),
+]).flipX = true
 
-//   const retry = add([
-//     text("Press Enter to Try Again", {
-//       font: "custom-font",
-//       size: 30,
-//       transform: (idx) => ({
-//         // color: rgb(255, 255, 255),
-//         pos: vec2(0, wave(-4, 4, time() * 4 + idx * 0.5)),
-//         scale: wave(1, 1.2, time() * 3 + idx),
-//         angle: wave(-24, 9, time() * 3 + idx),
-//       }),
-//     }),
-//     pos(width() / 2, height() / 1.5),
-//     scale(0.75, 0.75),
-//     anchor("center"),
-//     area(),
-//   ]);
+  const retry = add([
+    text("Press Enter to Try Again", {
+      font: "custom-font",
+      size: 30,
+      transform: (idx) => ({
+        // color: rgb(255, 255, 255),
+        pos: vec2(0, wave(-4, 4, time() * 4 + idx * 0.5)),
+        scale: wave(1, 1.2, time() * 3 + idx),
+        angle: wave(-24, 9, time() * 3 + idx),
+      }),
+    }),
+    pos(width() / 2, height() / 1.5),
+    scale(0.75, 0.75),
+    anchor("center"),
+    area(),
+  ]);
 
-//   const titleText = add([
-//     text("Game Over", {
-//       font: "custom-font",
-//       size: 45,
-//       transform: (idx) => ({
-//         // color: rgb(255, 255, 255),
-//         pos: vec2(0, wave(-4, 4, time() * 4 + idx * 0.5)),
-//         scale: wave(1, 1.2, time() * 3 + idx),
-//         angle: wave(-24, 9, time() * 3 + idx),
-//       }),
-//     }),
-//     pos(width() / 2, retry.pos.y / 2),
-//     scale(1.5),
-//     anchor("center"),
-//     area(),
-//   ])
+  const titleText = add([
+    text("Game Over", {
+      font: "custom-font",
+      size: 45,
+      transform: (idx) => ({
+        // color: rgb(255, 255, 255),
+        pos: vec2(0, wave(-4, 4, time() * 4 + idx * 0.5)),
+        scale: wave(1, 1.2, time() * 3 + idx),
+        angle: wave(-24, 9, time() * 3 + idx),
+      }),
+    }),
+    pos(width() / 2, retry.pos.y / 2),
+    scale(1.5),
+    anchor("center"),
+    area(),
+  ])
 
-//   // const displayScore = add([
-//   //   text(`Score: ${score.value}`, {
-//   //     transform: (idx) => ({
-//   //       // color: rgb(255, 255, 255),
-//   //       pos: vec2(0, wave(-4, 4, time() * 4 + idx * 0.5)),
-//   //       scale: wave(1, 1.2, time() * 3 + idx),
-//   //       angle: wave(-24, 9, time() * 3 + idx),
-//   //     }),
-//   //   }),
-//   //   pos(width() / 2, retry.pos.y / 1.5),
-//   //   scale(1.5),
-//   //   anchor("center"),
-//   //   area(),
-//   // ])
+  // const displayScore = add([
+  //   text(`Score: ${score.value}`, {
+  //     transform: (idx) => ({
+  //       // color: rgb(255, 255, 255),
+  //       pos: vec2(0, wave(-4, 4, time() * 4 + idx * 0.5)),
+  //       scale: wave(1, 1.2, time() * 3 + idx),
+  //       angle: wave(-24, 9, time() * 3 + idx),
+  //     }),
+  //   }),
+  //   pos(width() / 2, retry.pos.y / 1.5),
+  //   scale(1.5),
+  //   anchor("center"),
+  //   area(),
+  // ])
 
-//   onKeyPress("enter", () => {
-//     go("game");
-//   });
-// });
+  onKeyPress("enter", () => {
+    go("game");
+  });
+});
 
 //! -------------------------------- INVOKATION -------------------------------- */
 go("game");
