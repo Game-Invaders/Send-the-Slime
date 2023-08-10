@@ -26,44 +26,27 @@ loadFont("custom-font3", "fonts/LcdPhone-wgZ2.ttf");
 scene("start", () => {
   loadFont("custom-font", "fonts/Extrude-90aK.ttf");
 
-  add([
-    sprite('background-0'),
-    fixed(),
-    scale(5),
-  ])
+  add([sprite("background-0"), fixed(), scale(5)]);
+
+  add([sprite("background-0"), fixed(), pos(1000, 0), scale(5)]).flipX = true;
+
+  add([sprite("background-1"), fixed(), scale(4.35)]);
 
   add([
-    sprite('background-0'),
-    fixed(),
-    pos(1000, 0),
-    scale(5),
-  ]).flipX = true
-
-  add([
-    sprite('background-1'),
-    fixed(),
-    scale(4.35)
-  ])
-
-  add([
-    sprite('background-1'),
+    sprite("background-1"),
     fixed(),
     pos(1000, 0),
     scale(4.35),
-  ]).flipX = true
+  ]).flipX = true;
+
+  add([sprite("background-2"), fixed(), scale(4.35)]);
 
   add([
-    sprite('background-2'),
-    fixed(),
-    scale(4.35)
-  ])
-
-  add([
-    sprite('background-2'),
+    sprite("background-2"),
     fixed(),
     pos(1000, 0),
     scale(4.35),
-  ]).flipX = true
+  ]).flipX = true;
 
   const startGame = add([
     text("Press Space to Start", {
@@ -87,7 +70,7 @@ scene("start", () => {
     area(),
   ]);
   onClick(() => {
-    go('instructions')
+    go("instructions");
   });
 
   const titleText = add([
@@ -102,132 +85,115 @@ scene("start", () => {
     scale(1.5),
     anchor("center"),
     area(),
-  ])
+  ]);
   onKeyPress("space", () => {
     go("game");
   });
 });
 
-scene('instructions', () => {
-  add([
-    sprite('background-0'),
-    fixed(),
-    scale(5),
-  ])
+scene("instructions", () => {
+  add([sprite("background-0"), fixed(), scale(5)]);
+
+  add([sprite("background-0"), fixed(), pos(1000, 0), scale(5)]).flipX = true;
+
+  add([sprite("background-1"), fixed(), scale(4.35)]);
 
   add([
-    sprite('background-0'),
-    fixed(),
-    pos(1000, 0),
-    scale(5),
-  ]).flipX = true
-
-  add([
-    sprite('background-1'),
-    fixed(),
-    scale(4.35)
-  ])
-
-  add([
-    sprite('background-1'),
+    sprite("background-1"),
     fixed(),
     pos(1000, 0),
     scale(4.35),
-  ]).flipX = true
+  ]).flipX = true;
+
+  add([sprite("background-2"), fixed(), scale(4.35)]);
 
   add([
-    sprite('background-2'),
-    fixed(),
-    scale(4.35)
-  ])
-
-  add([
-    sprite('background-2'),
+    sprite("background-2"),
     fixed(),
     pos(1000, 0),
     scale(4.35),
-  ]).flipX = true
+  ]).flipX = true;
 
   add([
-    text('This is how to play!', {
+    text("This is how to play!", {
       font: "custom-font",
       size: 45,
     }),
     pos(width() / 2, height() / 5),
     scale(1),
-    anchor('center'),
+    anchor("center"),
     area(),
   ]);
 
   add([
-    text('Controls', {
+    text("Controls", {
       font: "custom-font",
       size: 40,
     }),
     pos(width() / 2, height() / 3),
     scale(1),
-    anchor('center'),
+    anchor("center"),
     area(),
   ]);
 
   add([
-    text('Space or \u2191 key: Jump!', {
+    text("Space or \u2191 key: Jump!", {
       font: "custom-font",
       size: 40,
     }),
     pos(width() / 2, height() / 2),
     scale(1),
-    anchor('center'),
+    anchor("center"),
     area(),
   ]);
 
   add([
-    text('\u2192 key: Move Right', {
+    text("\u2192 key: Move Right", {
       font: "custom-font",
       size: 40,
     }),
     pos(width() / 2, height() / 1.8),
     scale(1),
-    anchor('center'),
+    anchor("center"),
     area(),
   ]);
 
   add([
-    text('\u2190 key: Move Left', {
+    text("\u2190 key: Move Left", {
       font: "custom-font",
       size: 40,
     }),
     pos(width() / 2, height() / 1.6),
     scale(1),
-    anchor('center'),
+    anchor("center"),
     area(),
   ]);
 
   const back = add([
-    text('Click to Return to Start', {
+    text("Click to Return to Start", {
       font: "custom-font",
       size: 30,
     }),
     pos(width() / 2, height() / 1.28),
     scale(1),
-    anchor('center'),
+    anchor("center"),
     area(),
   ]);
   onClick(() => {
-    go('start')
+    go("start");
   });
   const tutorialStart = add([
-    text('Press Space to Start', {
+    text("Press Space to Start", {
       font: "custom-font",
       size: 30,
     }),
     pos(width() / 2, height() / 1.2),
     scale(1),
-    anchor('center'),
+    anchor("center"),
     area(),
   ]);
-    onKeyPress("space", () => {
-      go("game")
+  onKeyPress("space", () => {
+    go("game");
   });
 });
 
@@ -254,11 +220,10 @@ scene("game", () => {
     let platformHeight = rand(0.17, 0.25);
     add([
       sprite("platform"),
-      fixed(),
       area(),
-      body({ isStatic: true }),
+      // body({ isStatic: true }),
+      fixed(),
       pos(platformX, platformY),
-      // move(DOWN, gameSpeed),
       scale(platformHeight, 0.15),
       offscreen({ destroy: true }),
       { passed: false },
@@ -372,124 +337,136 @@ scene("game", () => {
           font: "custom-font3",
           size: 30,
         }),
-        pos(130, 730),
+        pos(125, 710),
         scale(0.75, 0.75),
         anchor("center"),
         area(),
         color("#f57878"),
       ]);
-      // if ((platform.passed = true && player.pos.y > platform.pos.y)) {
-      //   // destroy(platform)
-      //   // let newPosX = platform.pos.x;
-      //   // let newPosY = platform.pos.y;
-      //   // let newPlatformHeight = platform.scale.x;
-      //   destroy(platform);
-      //   // add([
-      //   //    sprite("platform"),
-      //   //    fixed(),
-      //   //    area(),
-      //   //    body(),
-      //   //    pos(newPosX, newPosY),
-      //   //    scale(newPlatformHeight, 0.15),
-      //   //    offscreen({ destroy: true }),
-      //   //    { passed: true },
-      //   //    "platform",
-      //   //  ]);
-      // }
     }
 
-    // if (platform.passed === true) {
-    //   wait(0.2, () => {
-    //    let newPosX = platform.pos.platformX;
-    //    let newPosY = platform.pos.platformY;
-    //    destroy(platform);
-    //    add([
-    //      sprite("newPlatform"),
-    //      fixed(),
-    //      area(),
-    //      body(),
-    //      pos(newPosX, newPosy),
-    //      // move(DOWN, gameSpeed),
-    //      scale(platformHeight, 0.15),
-    //      offscreen({ destroy: true }),
-    //      { passed: true },
-    //      "newPlatform",
-    //    ]);
-    //   })
-    // }
+    let newPosX = platform.pos.x;
+    let newPosY = platform.pos.y;
+    let newPlatformHeight = platform.scale.x;
+    if (platform.passed === true) {
+      wait(0.25, () => {
+        if (platform.pos.y >= player.pos.y) {
+          // debug.log(1);
+          destroy(platform);
+          add([
+            sprite("platform"),
+            fixed(),
+            area(),
+            body({ isStatic: true }),
+            pos(newPosX, newPosY),
+            scale(newPlatformHeight, 0.15),
+            offscreen({ destroy: true }),
+            { passed: true },
+            "newPlatform",
+          ]);
+        }
+      });
+    }
   });
 
-    player.onCollideEnd("player", "platform", (player, platform) => {
-      if (platform.passed === true && player.pos.y < platform.pos.platformY) {
-        // wait(0.2, () => {
-        //  let newPosX = platform.pos.x;
-        //  let newPosY = platform.pos.y;
-        //  destroy(platform);
-        //  add([
-        //    sprite("newPlatform"),
-        //    fixed(),
-        //    area(),
-        //    body(),
-        //    pos(newPosX, newPosy),
-        //    scale(platformHeight, 0.15),
-        //    offscreen({ destroy: true }),
-        //    { passed: true },
-        //    "newPlatform",
-        //  ]);
-        // })
-      }
-    })
-  
-    onKeyPress("space", () => {
-      if (player.isGrounded()) wallTouch = 0
-      setGravity(500);
-      if (momentum > 5) momentum = 5
-      if (player.isGrounded()) {
-        player.jump(jumpForce + (Number(momentum) * 25));
-        momentum = 0
-      }
-    });
-    // onKeyRelease("space", () => {momentum = 0})
-  
-    onKeyPress("up", () => {
-      if (player.isGrounded()) wallTouch = 0
-      setGravity(500);
-      if (momentum > 5) momentum = 5
-      if (player.isGrounded()) {
-        player.jump(jumpForce + (Number(momentum) * 25));
-        momentum = 0
-      }
-      momentum = 0
-    });
-    // onKeyRelease("up", () => {momentum = 0})
-  
-    onKeyDown("left", () => {
-      if (player.isGrounded()) {
-        wait(0.5, () => { momentum += 0.4 })
-      }
-      player.move(-200, 0);
-      player.flipX = false;
-    });
-    onKeyRelease("left", () => { momentum = 0 })
-  
-    onKeyDown("right", () => {
-      if (player.isGrounded()) {
-        wait(0.5, () => { momentum += 0.4 })
-      }
-      player.move(200, 0);
-      player.flipX = true;
-    });
-    onKeyRelease("right", () => { momentum = 0 })
-  
-    player.onCollide("wallL", "wallR", () => {
-      momentum = 0
-      if (wallTouch === 0) doubleJump(1)
-      wallTouch++
-    });
-    
-    player.onCollide('floor', () => {
-      wallTouch = 0;
-    })
+  onUpdate("newPlatform", (platform) => {
+      newPosX = platform.pos.x;
+      newPosY = platform.pos.y;
+      newPlatformHeight = platform.scale.x;
+    if (platform.passed === true && platform.pos.y < player.pos.y) {
+      destroy(platform);
+      debug.log(1);
+      add([
+        sprite("platform"),
+        fixed(),
+        area(),
+        pos(newPosX, newPosY),
+        scale(newPlatformHeight, 0.15),
+        offscreen({ destroy: true }),
+        { passed: false },
+        "platform",
+      ]);
+    }
+  });
+
+  // player.onCollideEnd("player", "platform", (player, platform) => {
+  //   if ((platform.passed = true && player.pos.y < platform.pos.y)) {
+  //     let newPosX = platform.pos.x;
+  //     let newPosY = platform.pos.y;
+  //     let newPlatformHeight = platform.scale.x;
+  //     destroy(platform);
+  //     add([
+  //       sprite("platform"),
+  //       fixed(),
+  //       area(),
+  //       body({ isStatic: true }),
+  //       pos(newPosX, newPosY),
+  //       scale(newPlatformHeight, 0.15),
+  //       offscreen({ destroy: true }),
+  //       { passed: true },
+  //       "platform",
+  //     ])
+  //   }
+  // });
+
+  onKeyPress("space", () => {
+    if (player.isGrounded()) wallTouch = 0;
+    setGravity(500);
+    if (momentum > 5) momentum = 5;
+    if (player.isGrounded()) {
+      player.jump(jumpForce + Number(momentum) * 25);
+      momentum = 0;
+    }
+  });
+  // onKeyRelease("space", () => {momentum = 0})
+
+  onKeyPress("up", () => {
+    if (player.isGrounded()) wallTouch = 0;
+    setGravity(500);
+    if (momentum > 5) momentum = 5;
+    if (player.isGrounded()) {
+      player.jump(jumpForce + Number(momentum) * 25);
+      momentum = 0;
+    }
+    momentum = 0;
+  });
+  // onKeyRelease("up", () => {momentum = 0})
+
+  onKeyDown("left", () => {
+    if (player.isGrounded()) {
+      wait(0.5, () => {
+        momentum += 0.4;
+      });
+    }
+    player.move(-200, 0);
+    player.flipX = false;
+  });
+  onKeyRelease("left", () => {
+    momentum = 0;
+  });
+
+  onKeyDown("right", () => {
+    if (player.isGrounded()) {
+      wait(0.5, () => {
+        momentum += 0.4;
+      });
+    }
+    player.move(200, 0);
+    player.flipX = true;
+  });
+  onKeyRelease("right", () => {
+    momentum = 0;
+  });
+
+  player.onCollide("wallL", "wallR", () => {
+    momentum = 0;
+    if (wallTouch === 0) doubleJump(1);
+    wallTouch++;
+  });
+
+  player.onCollide("floor", () => {
+    wallTouch = 0;
+  });
 });
 
 //! -------------------------------- GAMEOVER SCREEN -------------------------------- */
