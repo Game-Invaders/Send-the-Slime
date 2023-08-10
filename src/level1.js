@@ -256,6 +256,7 @@ scene("game", () => {
       sprite("platform"),
       fixed(),
       area(),
+      body({ isStatic: true }),
       pos(platformX, platformY),
       // move(DOWN, gameSpeed),
       scale(platformHeight, 0.15),
@@ -356,7 +357,7 @@ scene("game", () => {
 
   //! -------------------------------- CONTROLS -------------------------------- */
   let wallTouch = 0;
-  let traveled = 150;
+  let momentum = 150;
   let jumpForce = 350;
 
   // if (!player.isGrounded()) traveled = 0
@@ -438,66 +439,57 @@ scene("game", () => {
         // })
       }
     })
-
-  onKeyPress("space", () => {
-    if (player.isGrounded() && traveled >= 0) {
-      player.jump(jumpForce + Number(traveled));
-      traveled = 0;
-    }
-  });
-  onKeyRelease("space", () => {
-    momentum = 0;
-  });
-
-  onKeyPress("up", () => {
-    setGravity(500);
-    if (player.isGrounded() && traveled >= 0) {
-      player.jump(jumpForce + Number(traveled));
-      traveled = 0;
-    }
-  });
-
-  onKeyDown("left", () => {
-    // loop(1, () => {
-    //   if (player.isGrounded()) {
-    //     traveled++
-    //   }
-    //   if (traveled > 5) traveled = 5
-    // })
-    player.move(-200, 0);
-    player.flipX = false;
-  });
-
-  onKeyDown("right", () => {
-    // loop(1, () => {
-    //   if (player.isGrounded()) {
-    //     traveled++
-    //   }
-    //   if (traveled > 5) traveled = 5
-    // })
-    player.move(200, 0);
-    player.flipX = true;
-  });
-
-  // player.onCollideEnd("platform", (platform) => {
-  //   // if(platform.passed === true) {
-  //   //     debug.log(passed)
-  //   //       // platform.body() = { isStatic: true };
-  //   // }
-  //   // .push({ isStatic: true });
-  // });
-
-  player.onCollide("wallL", () => {
-    traveled = 0;
-  });
-
-  player.onCollide("wallR", () => {
-    traveled = 0;
-  });
-
-  player.onCollide("floor", () => {
-    traveled = 0;
-  });
+  
+    onKeyPress("space", () => {
+      if (player.isGrounded()) wallTouch = 0
+      setGravity(500);
+      if (momentum > 5) momentum = 5
+      if (player.isGrounded()) {
+        player.jump(jumpForce + (Number(momentum) * 25));
+        momentum = 0
+      }
+    });
+    // onKeyRelease("space", () => {momentum = 0})
+  
+    onKeyPress("up", () => {
+      if (player.isGrounded()) wallTouch = 0
+      setGravity(500);
+      if (momentum > 5) momentum = 5
+      if (player.isGrounded()) {
+        player.jump(jumpForce + (Number(momentum) * 25));
+        momentum = 0
+      }
+      momentum = 0
+    });
+    // onKeyRelease("up", () => {momentum = 0})
+  
+    onKeyDown("left", () => {
+      if (player.isGrounded()) {
+        wait(0.5, () => { momentum += 0.4 })
+      }
+      player.move(-200, 0);
+      player.flipX = false;
+    });
+    onKeyRelease("left", () => { momentum = 0 })
+  
+    onKeyDown("right", () => {
+      if (player.isGrounded()) {
+        wait(0.5, () => { momentum += 0.4 })
+      }
+      player.move(200, 0);
+      player.flipX = true;
+    });
+    onKeyRelease("right", () => { momentum = 0 })
+  
+    player.onCollide("wallL", "wallR", () => {
+      momentum = 0
+      if (wallTouch === 0) doubleJump(1)
+      wallTouch++
+    });
+    
+    player.onCollide('floor', () => {
+      wallTouch = 0;
+    })
 });
 
 //! -------------------------------- GAMEOVER SCREEN -------------------------------- */
