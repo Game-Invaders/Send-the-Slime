@@ -8,3 +8,19 @@ body {
   background-size: 100%;
   background-repeat: repeat;
 }
+#screenSizeAlert {
+  display: none;
+  color: white;
+  text-align: center;
+  font-size: 30px;
+  margin: 250px 30px;
+  background: black;
+}
+@media(max-width: 631px){
+  canvas {
+    display: none;
+  }
+  #screenSizeAlert {
+    display: block;
+  }
+}
